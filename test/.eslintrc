@@ -1,0 +1,8 @@
+{
+  "rules": {
+    "max-nested-callbacks": ["error", 5],
+    "max-lines": ["error", { max: 200, skipBlankLines: true, skipComments: true }],
+    "max-lines-per-function": "off",
+    "max-statements": ["error", 20]
+  }
+}

@@ -1,0 +1,45 @@
+version: '3.6'
+
+services:
+  localstack:
+    environment:
+      AWS_ACCESS_KEY_ID: missing
+      AWS_REGION: us-east-1
+      AWS_SECRET_ACCESS_KEY: missing
+      HOSTNAME: localstack
+      HOSTNAME_EXTERNAL: localstack
+      SERVICES: sns,sqs
+      VIRTUAL_HOST: localstack.message-bus.messaging.localtest.me
+      VIRTUAL_PORT: 8080
+    image: localstack/localstack
+    networks:
+      - default
+      - messaging
+
+  rabbitmq:
+    image: rabbitmq:3.7-management-alpine
+
+  messaging:
+    build: docker/development
+    depends_on:
+      - localstack
+      - rabbitmq
+    environment:
+      APP_NAME: messaging-services
+      AWS_ACCESS_KEY_ID: missing
+      AWS_ACCOUNT_ID: 123456789012
+      AWS_REGION: us-east-1
+      AWS_SECRET_ACCESS_KEY: missing
+      NODE_PATH: /var/task/src:/var/task/test
+      SNS_ENDPOINT: http://localstack:4575
+      SQS_ENDPOINT: http://localstack:4576
+    container_name: messaging
+    networks:
+      - default
+      - messaging
+    volumes:
+      - .:/var/task
+
+networks:
+  messaging:
+    external: true
