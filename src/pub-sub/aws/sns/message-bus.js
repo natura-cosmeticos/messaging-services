@@ -1,4 +1,4 @@
-const Logger = require('@naturacosmeticos/node-logger');
+const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 
 const ClientFactory = require('../../../common/aws/client-factory');
 const MessageBusError = require('../../../common/errors/message-bus-error');

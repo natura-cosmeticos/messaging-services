@@ -1,3 +1,3 @@
-const Logger = require('@naturacosmeticos/node-logger');
+const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 
 Logger.supressOutput = true;

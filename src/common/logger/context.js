@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const domain = require('domain');
 const uuid = require('uuid/v4');
-const Logger = require('@naturacosmeticos/node-logger');
+const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 
 /** @private */
 class LoggerContext {

@@ -1,5 +1,5 @@
 const amqp = require('amqplib');
-const Logger = require('@naturacosmeticos/node-logger');
+const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 
 const MessageBusError = require('../errors/message-bus-error');
 const errorMessages = require('../errors/messages');

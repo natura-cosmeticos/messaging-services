@@ -1,6 +1,6 @@
 const async = require('async');
 const Consumer = require('sqs-consumer');
-const Logger = require('@naturacosmeticos/node-logger');
+const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 const { promisify } = require('util');
 
 const ClientFactory = require('../../common/aws/client-factory');
