@@ -1,0 +1,9 @@
+{
+  "name": "iris-example-readme",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@naturacosmeticos/iris-nodejs-messenger": "^1.0.0"
+  }
+}
