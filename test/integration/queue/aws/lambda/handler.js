@@ -50,11 +50,12 @@ describe('LambdaHandler', () => {
   });
 
   describe('with only some commands successfully executed', () => {
-    it('removes only failed messages from the queue', async () => {
+    it('removes only successful messages from the queue', async () => {
       const messageCount = faker.random.number({ max: 8, min: 3 });
       const failedMessages = messageCount - 2;
       const successMessages = messageCount - failedMessages;
 
+      assert.equal(await queue.length(), 0);
       await queue.sendManyRepeatedly(failedMessages, 'fail');
       await queue.sendManyRepeatedly(successMessages, 'success');
       assert.equal(await queue.length(), messageCount);
@@ -75,6 +76,9 @@ describe('LambdaHandler', () => {
 
       await new LambdaHandler(arnToQueueInfo, handlerFactories)
         .handle(lambdaInput).catch(() => { });
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       assert.equal(await queue.length(), failedMessages);
     });
   });
