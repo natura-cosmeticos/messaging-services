@@ -77,6 +77,10 @@ describe('LambdaHandler', () => {
       await new LambdaHandler(arnToQueueInfo, handlerFactories)
         .handle(lambdaInput).catch(() => { });
 
+      /*
+        this sleep is necessary because testing with localstack sometimes the queue still
+        has some messages that are in process of being deleted.
+      */
       await new Promise(resolve => setTimeout(resolve, 500));
 
       assert.equal(await queue.length(), failedMessages);
