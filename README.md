@@ -1,3 +1,8 @@
+[![Known Vulnerabilities](https://snyk.io/test/github/natura-cosmeticos/iris-nodejs-messenger/badge.svg?targetFile=package.json)](https://snyk.io/test/github/natura-cosmeticos/iris-nodejs-messenger?targetFile=package.json)
+[![Build Status](https://travis-ci.org/natura-cosmeticos/iris-nodejs-messenger.svg?branch=master)](https://travis-ci.org/natura-cosmeticos/iris-nodejs-messenger)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/d94e41c2fc564657a1ed90a2483e50b7)](https://www.codacy.com/app/handrus_1938/iris-nodejs-messenger?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=natura-cosmeticos/iris-nodejs-messenger&amp;utm_campaign=Badge_Grade)
+
+
 # Iris Node.js Messenger
 
 This project provides utilities to ease the communication between services.
