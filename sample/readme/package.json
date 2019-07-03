@@ -4,6 +4,12 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@naturacosmeticos/iris-nodejs-messenger": "^1.0.0"
-  }
+    "@naturacosmeticos/iris-nodejs-messenger": "^1.0.0",
+    "snyk": "^1.189.0"
+  },
+  "scripts": {
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
