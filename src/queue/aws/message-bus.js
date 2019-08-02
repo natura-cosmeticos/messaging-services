@@ -1,5 +1,7 @@
 const async = require('async');
+const bson = require('bson');
 const Consumer = require('sqs-consumer');
+const ungzip = require('node-gzip');
 const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 const { promisify } = require('util');
 
@@ -15,9 +17,10 @@ class MessageBus {
   /**
    * @param {Array} friendlyNamesToUrl - A map of the friendly queue name to URL
    */
-  constructor(friendlyNamesToUrl) {
+  constructor(friendlyNamesToUrl, compactMessages) {
     /** @private */
     this.friendlyNamesToUrl = friendlyNamesToUrl;
+    this.compactMessages = compactMessages;
   }
 
   /**
@@ -45,6 +48,20 @@ class MessageBus {
   }
 
   /**
+   * Decompress message
+   * @param {string} message - The message you want to decompress
+   */
+  async decompressMessage(message) {
+    const buff = Buffer.from(message.body, 'base64');
+
+    const unzipped = await ungzip(buff);
+
+    const messageDecompressed = bson.deserialize(unzipped);
+
+    return messageDecompressed;
+  }
+
+  /**
    * Stops polling messages
    * @returns Promise<void>
    */
@@ -67,8 +84,16 @@ class MessageBus {
 
   /** @private */
   handler(queueName, fn) {
-    return (message, done) => LoggerContext.run(() => {
-      const body = JSON.parse(message.Body);
+    return (message, done) => LoggerContext.run(async () => {
+      let messageDecompressed;
+
+      if (this.compactMessages && message.Body.compacted) {
+        messageDecompressed = await this.decompressMessage(message.Body);
+      } else {
+        messageDecompressed = message.Body;
+      }
+
+      const body = messageDecompressed;
 
       LoggerContext.logItemProcessing(() => fn(body), queueName, body)
         .then(() => done())

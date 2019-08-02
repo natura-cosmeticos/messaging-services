@@ -24,8 +24,8 @@ class MessageBusFactory {
   }
 
   /** @private */
-  static createAwsSnsBus({ friendlyNamesToUrl }) {
-    return new QueueAwsSqsMessageBus(friendlyNamesToUrl);
+  static createAwsSnsBus({ friendlyNamesToUrl, compactMessages }) {
+    return new QueueAwsSqsMessageBus(friendlyNamesToUrl, compactMessages);
   }
 }
 

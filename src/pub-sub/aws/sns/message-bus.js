@@ -1,5 +1,6 @@
+const bson = require('bson');
+const gzip = require('node-gzip');
 const Logger = require('@naturacosmeticos/clio-nodejs-logger');
-
 const ClientFactory = require('../../../common/aws/client-factory');
 const MessageBusError = require('../../../common/errors/message-bus-error');
 const errorMessages = require('../../../common/errors/messages');
@@ -11,9 +12,32 @@ class MessageBus {
   /**
    * @param {Array} friendlyNamesToUrl - A map of the friendly queue name to ARN
    */
-  constructor(friendlyNamesToArn) {
+  constructor(friendlyNamesToArn, compactMessages = false) {
     /** @private */
     this.friendlyNamesToArn = friendlyNamesToArn;
+    this.compactMessages = compactMessages;
+  }
+
+  /**
+   * Publish a message in an AWS SNS topic
+   * @param {string} message - The message you want to compact
+   */
+  async compactMessage(message) {
+    const messageCompacted = message;
+
+    if (this.compactMessages) {
+      const serialized = bson.serialize(message.body);
+      const gzipped = await gzip(serialized);
+      const compacted = Buffer.from(gzipped).toString('base64');
+
+      messageCompacted.compacted = true;
+
+      messageCompacted.body = compacted;
+    } else {
+      messageCompacted.compacted = false;
+    }
+
+    return JSON.stringify(messageCompacted);
   }
 
   /**
@@ -28,8 +52,10 @@ class MessageBus {
     logger.log('Sending message to SNS', { message });
 
     try {
+      const compactMessage = await this.compactMessage(message);
+
       return await sns.publish({
-        Message: JSON.stringify(message),
+        Message: compactMessage,
         TopicArn: this.friendlyNamesToArn[topic],
       }).promise();
     } catch (error) {
