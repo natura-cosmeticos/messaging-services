@@ -7,6 +7,7 @@ const { assert } = require('chai');
 
 const { PubSub: { Aws: { MessageBus } } } = require('../../../../../index');
 const MessageBusError = require('../../../../../src/common/errors/message-bus-error');
+const CompressEngine = require('../../../../../src/util/compress-engine/index');
 
 const ipAddress = os.networkInterfaces().eth0[0].address;
 
@@ -48,9 +49,12 @@ describe('MessageBus', () => {
     (async () => {
       const message = `Message body  ${uuid()}`;
 
-      server = createServer((err, buffer) => {
+      server = createServer(async (err, buffer) => {
+        const receivedMessage = JSON.parse(buffer.toString()).Message;
+        const decompressedMessage = await CompressEngine.decompressMessage(receivedMessage);
+
         assert.isNull(err);
-        assert.equal(JSON.stringify(message), JSON.parse(buffer.toString()).Message);
+        assert.equal(message, decompressedMessage);
         done();
       });
       const listener = server.listen(0);

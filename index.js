@@ -7,6 +7,7 @@ const QueueAwsSqsMessageBus = require('./src/queue/aws/message-bus');
 const QueueMessageBusFactory = require('./src/queue/factory');
 const TestingMessageBus = require('./src/pub-sub/testing-message-bus');
 const LambdaHandler = require('./src/queue/aws/lambda/handler');
+const CompressEngine = require('./src/util/compress-engine');
 
 module.exports = {
   CommandFactory,
@@ -26,10 +27,13 @@ module.exports = {
     Amqp: {
       MessageBus: QueueAmqpMessageBus,
     },
-    Factory: QueueMessageBusFactory,
     Aws: {
-      MessageBus: QueueAwsSqsMessageBus,
       LambdaHandler,
+      MessageBus: QueueAwsSqsMessageBus,
     },
+    Factory: QueueMessageBusFactory,
+  },
+  Util: {
+    CompressEngine,
   },
 };
