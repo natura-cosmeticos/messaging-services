@@ -38,7 +38,7 @@ describe('PubSubAmqpMessageBus', () => {
       // Verify
 
       await sleep();
-      
+
       const receivedMessage = await channel.get(tempQueue);
 
       assert.isObject(receivedMessage);
