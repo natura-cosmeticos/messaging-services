@@ -3,17 +3,19 @@ const CompressEngineFactory = require('./engines');
 
 class CompressEngine {
   static compress(input, engine = CompressEngineEnum.GZIP) {
-    CompressEngineFactory.create(engine);
-    if (!CompressEngineFactory) return input;
+    const compressEngine = CompressEngineFactory.create(engine);
 
-    return CompressEngineFactory.compress(input);
+    if (!compressEngine) return input;
+
+    return compressEngine.compress(input);
   }
 
   static decompress(input, engine = CompressEngineEnum.GZIP) {
-    CompressEngineFactory.create(engine);
-    if (!CompressEngineFactory) return input;
+    const compressEngine = CompressEngineFactory.create(engine);
 
-    return CompressEngineFactory.decompress(input);
+    if (!compressEngine) return input;
+
+    return compressEngine.decompress(input);
   }
 }
 

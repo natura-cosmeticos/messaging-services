@@ -1,11 +1,11 @@
-const gzip = require('./gzip');
+const GzipEngine = require('./gzip');
 const { GZIP } = require('../compress-engine-enum');
 
 class CompressEngineFactory {
   static create(engine) {
     switch (engine) {
       case GZIP:
-        return gzip;
+        return new GzipEngine();
       default:
         return undefined;
     }
