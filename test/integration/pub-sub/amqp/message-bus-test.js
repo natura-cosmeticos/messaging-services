@@ -6,6 +6,8 @@ const { PubSub: { Amqp: { MessageBus } } } = require('../../../../index');
 
 const ServerUrl = 'amqp://rabbitmq';
 
+const sleep = () => new Promise(resolve => setTimeout(resolve, 500));
+
 describe('PubSubAmqpMessageBus', () => {
   let connection;
   let channel;
@@ -34,6 +36,9 @@ describe('PubSubAmqpMessageBus', () => {
       await messageBus.publish(bus, message);
 
       // Verify
+
+      await sleep();
+      
       const receivedMessage = await channel.get(tempQueue);
 
       assert.isObject(receivedMessage);

@@ -1,6 +1,23 @@
 const CompressEngineEnum = require('./compress-engine-enum');
 const CompressEngineFactory = require('./engines');
 
+async function extractInputMessage(inputMessage) {
+  const compressEngine = CompressEngineFactory.create(inputMessage['x-iris-engine']);
+
+  if (!compressEngine) return inputMessage['x-iris-data'];
+
+  const input = await compressEngine.decompress(inputMessage['x-iris-data']);
+  let resultData;
+
+  try {
+    resultData = JSON.parse(input);
+  } catch (err) {
+    resultData = input;
+  }
+
+  return resultData;
+}
+
 class CompressEngine {
   static compress(input, engine = CompressEngineEnum.GZIP) {
     const compressEngine = CompressEngineFactory.create(engine);
@@ -30,23 +47,16 @@ class CompressEngine {
     return compressEngine.decompress(input);
   }
 
-  static async decompressMessage(inputMessage) {
-    if (inputMessage['x-iris-engine'] && inputMessage['x-iris-data']) {
-      const compressEngine = CompressEngineFactory.create(inputMessage['x-iris-engine']);
+  static async decompressMessage(message) {
+    let inputMessage = message;
 
-      if (!compressEngine) return inputMessage['x-iris-data'];
-      const input = await compressEngine.decompress(inputMessage['x-iris-data']);
-      let resultData;
-
-      try {
-        resultData = JSON.parse(input);
-      } catch (err) {
-        resultData = input;
-      }
-
-      return resultData;
+    if (typeof inputMessage === 'string') {
+      inputMessage = JSON.parse(inputMessage);
     }
 
+    if (inputMessage['x-iris-engine'] && inputMessage['x-iris-data']) {
+      inputMessage = await extractInputMessage(inputMessage);
+    }
 
     return inputMessage;
   }

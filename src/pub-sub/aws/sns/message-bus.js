@@ -32,7 +32,7 @@ class MessageBus {
 
     try {
       return await sns.publish({
-        Message: compressedMessage,
+        Message: JSON.stringify(compressedMessage),
         TopicArn: this.friendlyNamesToArn[topic],
       }).promise();
     } catch (error) {
