@@ -17,4 +17,26 @@ describe('Testing Compression', () => {
 
     assert.equal(inputData, compressedData);
   });
+
+  it('should compress and decompress a Message as gzip ', async () => {
+    const inputData = { teste: 'TESTE MESSAGE' };
+    const compressedData = await CompressEngine.compressMessage(inputData, CompressEngineEnum.GZIP);
+    const decopressed = await CompressEngine.decompressMessage(compressedData);
+
+    assert.equal(inputData.teste, decopressed.teste);
+  });
+
+  it('should not compress a message', async () => {
+    const inputData = { teste: 'TESTE MESSAGE' };
+    const compressedData = await CompressEngine.compressMessage(inputData, 'unrecognized engine');
+
+    assert.equal(inputData, compressedData);
+  });
+
+  it('should not decompress a message', async () => {
+    const inputData = { teste: 'TESTE MESSAGE' };
+    const decompressedData = await CompressEngine.decompressMessage(inputData, 'unrecognized engine');
+
+    assert.equal(inputData, decompressedData);
+  });
 });
