@@ -1,5 +1,6 @@
 const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 
+const CompressEngine = require('../../../util/compress-engine');
 const ClientFactory = require('../../../common/aws/client-factory');
 const MessageBusError = require('../../../common/errors/message-bus-error');
 const errorMessages = require('../../../common/errors/messages');
@@ -11,9 +12,10 @@ class MessageBus {
   /**
    * @param {Array} friendlyNamesToUrl - A map of the friendly queue name to ARN
    */
-  constructor(friendlyNamesToArn) {
+  constructor(friendlyNamesToArn, compressEngine) {
     /** @private */
     this.friendlyNamesToArn = friendlyNamesToArn;
+    this.compressEngine = compressEngine || process.env.IRIS_COMPRESS_ENGINE;
   }
 
   /**
@@ -26,10 +28,11 @@ class MessageBus {
     const logger = Logger.current().createChildLogger('message-bus:send');
 
     logger.log('Sending message to SNS', { message });
+    const compressedMessage = await CompressEngine.compressMessage(message, this.compressEngine);
 
     try {
       return await sns.publish({
-        Message: JSON.stringify(message),
+        Message: compressedMessage,
         TopicArn: this.friendlyNamesToArn[topic],
       }).promise();
     } catch (error) {
