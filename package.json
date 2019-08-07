@@ -4,7 +4,7 @@
   "author": "Natura Cosméticos <TDDAArquitetura@natura.net>",
   "version": "2.0.0",
   "dependencies": {
-    "@naturacosmeticos/clio-nodejs-logger": "^1.0.0",
+    "@naturacosmeticos/clio-nodejs-logger": "git+https://git@github.com/mukaportes/node-base.git",
     "amqplib": "^0.5.2",
     "async": "^2.6.1",
     "aws-sdk": "^2.271.1",
