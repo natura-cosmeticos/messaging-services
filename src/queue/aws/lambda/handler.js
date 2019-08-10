@@ -1,5 +1,5 @@
 const LoggerContext = require('../../../common/logger/context');
-const CorrelationEngine = require('../../../util/correlation-engine/correlationEngine');
+const CorrelationEngine = require('../../../util/correlation-engine');
 const CompressEngine = require('../../../util/compress-engine');
 const errorMessages = require('../../../common/errors/messages');
 const MessageBusError = require('../../../common/errors/message-bus-error');

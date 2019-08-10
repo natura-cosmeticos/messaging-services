@@ -7,8 +7,8 @@ const ClientFactory = require('../../common/aws/client-factory');
 const LoggerContext = require('../../common/logger/context');
 const MessageBusError = require('../../common/errors/message-bus-error');
 const errorMessages = require('../../common/errors/messages');
-const CompressEngine = require('../../../util/compress-engine');
-const CorrelationEngine = require('../../util/correlation-engine/correlationEngine');
+const CompressEngine = require('../../util/compress-engine');
+const CorrelationEngine = require('../../util/correlation-engine');
 
 /**
  * AWS Queue MessageBus listener
@@ -69,7 +69,7 @@ class MessageBus {
 
   /** @private */
   handler(queueName, fn) {
-    return (message, done) => LoggerContext.run(() => {
+    return (message, done) => LoggerContext.run(async () => {
 
       const logger = Logger.current().createChildLogger('message-bus:handler');
 
@@ -81,7 +81,7 @@ class MessageBus {
 
         LoggerContext
           .logItemProcessing(() => fn(body, correlationId), queueName, body)
-          .then(() => {
+          .then(async () => {
             try {
               await this.sqs.deleteMessage({
                 QueueUrl: queueInfo.url,

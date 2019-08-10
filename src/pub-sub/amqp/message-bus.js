@@ -3,8 +3,8 @@ const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 const AmqpConnection = require('../../common/amqp/connection');
 const MessageBusError = require('../../common/errors/message-bus-error');
 const errorMessages = require('../../common/errors/messages');
-const CorrelationEngine = require('../../util/correlation-engine/correlationEngine');
-const CompressEngine = require('../../../util/compress-engine');
+const CorrelationEngine = require('../../util/correlation-engine');
+const CompressEngine = require('../../util/compress-engine');
 
 /**
  * RabbitMQ message bus implementation

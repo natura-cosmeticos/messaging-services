@@ -4,7 +4,7 @@ const ClientFactory = require('../../../common/aws/client-factory');
 const MessageBusError = require('../../../common/errors/message-bus-error');
 const errorMessages = require('../../../common/errors/messages');
 const CompressEngine = require('../../../util/compress-engine');
-const CorrelationEngine = require('../../util/correlation-engine/correlationEngine');
+const CorrelationEngine = require('../../../util/correlation-engine');
 
 /**
  * AWS SNS publisher

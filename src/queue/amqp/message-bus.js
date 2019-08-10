@@ -1,6 +1,6 @@
 const AmqpConnection = require('../../common/amqp/connection');
 const LoggerContext = require('../../common/logger/context');
-const CorrelationEngine = require('../../util/correlation-engine/correlationEngine');
+const CorrelationEngine = require('../../util/correlation-engine');
 const CompressEngine = require('../../util/compress-engine');
 const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 const errorMessages = require('../../common/errors/messages');
@@ -83,7 +83,7 @@ class AmqpMessageBus {
   handler(queueName, channel, fn) {
     const logger = Logger.current().createChildLogger('message-bus:receive');
 
-    return message => LoggerContext.run(() => new Promise((resolve) => {
+    return message => LoggerContext.run(() => new Promise(async (resolve) => {
       const compressedMessage = JSON.parse(message.content.toString('utf-8'));
 
       try {
