@@ -40,7 +40,7 @@ class MessageBus {
     }
 
     try {
-      logger.log(`Sending message to SNS\nUnwrapped message ${JSON.stringify({ message })}\nWrapped message ${wrappedCorrelationIdMessage}`);
+      logger.log(`Sending message to SNS\nUnwrapped message ${JSON.stringify({ message })}\nWrapped message ${JSON.stringify(wrappedCorrelationIdMessage)}`);
 
       return await sns.publish({
         Message: JSON.stringify(compressedMessage),
