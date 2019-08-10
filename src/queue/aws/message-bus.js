@@ -77,7 +77,7 @@ class MessageBus {
         const wrappedCorrelationIdMessage = await CompressEngine.decompressMessage(message.body);
         const { body, correlationId } = CorrelationEngine.unwrapMessage(wrappedCorrelationIdMessage);
 
-        logger.log('Receiving message from SQS\nUnwrapped message', { body }, '\nWrapped message', wrappedCorrelationIdMessage);
+        logger.log(`Receiving message from SQS\nUnwrapped message', ${{ body }},'\nWrapped message', ${wrappedCorrelationIdMessage}`);
 
         LoggerContext
           .logItemProcessing(() => fn(body, correlationId), queueName, body)

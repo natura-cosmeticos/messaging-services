@@ -45,7 +45,7 @@ class MessageBus {
 
       await connection.channel.assertExchange(bus, 'fanout', { durable: true });
 
-      logger.log('Sending message to AMQP bus\nUnwrapped message', { message }, '\nWrapped message', compressedMessage);
+      logger.log(`Sending message to AMQP bus\nUnwrapped message ${JSON.stringify({ message })}\nWrapped message ${compressedMessage}`);
 
       await connection.channel.publish(bus, '', Buffer.from(JSON.stringify(compressedMessage)), { persistent: true });
     } catch (error) {
