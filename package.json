@@ -4,7 +4,7 @@
   "author": "Natura Cosméticos <TDDAArquitetura@natura.net>",
   "version": "2.0.1",
   "dependencies": {
-    "@naturacosmeticos/async-hook-storage": "^1.0.0",
+    "@naturacosmeticos/async-hooks-storage": "^1.0.0",
     "@naturacosmeticos/clio-nodejs-logger": "^2.0.0",
     "amqplib": "^0.5.2",
     "async": "^2.6.1",
