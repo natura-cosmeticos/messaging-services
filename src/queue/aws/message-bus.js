@@ -7,6 +7,8 @@ const ClientFactory = require('../../common/aws/client-factory');
 const LoggerContext = require('../../common/logger/context');
 const MessageBusError = require('../../common/errors/message-bus-error');
 const errorMessages = require('../../common/errors/messages');
+const CompressEngine = require('../../../util/compress-engine');
+const CorrelationEngine = require('../../util/correlation-engine/correlationEngine');
 
 /**
  * AWS Queue MessageBus listener
@@ -26,14 +28,14 @@ class MessageBus {
   * @returns {Promise<void>}
   */
   async receive(queueHandlerMap) {
-    const sqs = ClientFactory.create('sqs');
+    this.sqs = ClientFactory.create('sqs');
     const logger = Logger.current().createChildLogger('message-bus:receive');
 
     /** @private */
     this.consumers = Object.keys(queueHandlerMap).map(queueName => Consumer.create({
       handleMessage: this.handler(queueName, queueHandlerMap[queueName]),
       queueUrl: this.friendlyNamesToUrl[queueName],
-      sqs,
+      sqs: this.sqs,
     }));
 
     try {
@@ -68,11 +70,34 @@ class MessageBus {
   /** @private */
   handler(queueName, fn) {
     return (message, done) => LoggerContext.run(() => {
-      const body = JSON.parse(message.Body);
 
-      LoggerContext.logItemProcessing(() => fn(body), queueName, body)
-        .then(() => done())
-        .catch(done);
+      const logger = Logger.current().createChildLogger('message-bus:handler');
+
+      try {
+        const wrappedCorrelationIdMessage = await CompressEngine.decompressMessage(message.body);
+        const { body, correlationId } = CorrelationEngine.unwrapMessage(wrappedCorrelationIdMessage);
+
+        logger.log('Receiving message from SQS\nUnwrapped message', { body }, '\nWrapped message', wrappedCorrelationIdMessage);
+
+        LoggerContext
+          .logItemProcessing(() => fn(body, correlationId), queueName, body)
+          .then(() => {
+            try {
+              await this.sqs.deleteMessage({
+                QueueUrl: queueInfo.url,
+                ReceiptHandle: receiptHandle,
+              }).promise();
+            } catch (error) {
+              logger.error(`MessageId ${message.messageId}: ${errorMessages.messageBus.delete} - ${error}`);
+            }
+
+            done();
+          })
+          .catch(done);
+      } catch (error) {
+        logger.error(`${errorMessages.messageBus.decompress} - ${error}`);
+        throw new MessageBusError(`${errorMessages.messageBus.decompress}: ${error}`)
+      }
     });
   }
 }

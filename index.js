@@ -35,5 +35,6 @@ module.exports = {
   },
   Util: {
     CompressEngine,
+    CorrelationEngine
   },
 };

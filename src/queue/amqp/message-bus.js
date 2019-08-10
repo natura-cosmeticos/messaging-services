@@ -1,5 +1,10 @@
 const AmqpConnection = require('../../common/amqp/connection');
 const LoggerContext = require('../../common/logger/context');
+const CorrelationEngine = require('../../util/correlation-engine/correlationEngine');
+const CompressEngine = require('../../util/compress-engine');
+const Logger = require('@naturacosmeticos/clio-nodejs-logger');
+const errorMessages = require('../../common/errors/messages');
+const MessageBusError = require('../../common/errors/message-bus-error');
 
 /**
  * AMQP MessageBus listener
@@ -76,14 +81,25 @@ class AmqpMessageBus {
   * @private
   */
   handler(queueName, channel, fn) {
-    return message => LoggerContext.run(() => new Promise((resolve) => {
-      const body = JSON.parse(message.content.toString('utf-8'));
+    const logger = Logger.current().createChildLogger('message-bus:receive');
 
-      LoggerContext
-        .logItemProcessing(() => fn(body), queueName, body)
-        .then(() => channel.ack(message))
-        .catch(() => channel.nack(message))
-        .then(resolve);
+    return message => LoggerContext.run(() => new Promise((resolve) => {
+      const compressedMessage = JSON.parse(message.content.toString('utf-8'));
+
+      try {
+        const decompressedMessage = await CompressEngine.decompressMessage(compressedMessage);
+        const wrappedCorrelationIdMessage = JSON.parse(decompressedMessage.Body);
+        const { body, correlationId } = CorrelationEngine.unwrapMessage(wrappedCorrelationIdMessage);
+
+        LoggerContext
+          .logItemProcessing(() => fn(body, correlationId), queueName, body)
+          .then(() => channel.ack(message))
+          .catch(() => channel.nack(message))
+          .then(resolve);
+      } catch (error) {
+        logger.error(`${errorMessages.messageBus.decompress} - ${error}`);
+        throw new MessageBusError(`${errorMessages.messageBus.decompress}: ${error}`);
+      }
     }));
   }
 }
