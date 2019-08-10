@@ -1,5 +1,5 @@
 const { PubSub: { Factory } } = require('@naturacosmeticos/iris-nodejs-messenger');
-const AsyncHookStorage = require('@naturacosmeticos/async-hook-storage');
+const AsyncHookStorage = require('@naturacosmeticos/async-hooks-storage');
 const uuidV4 = require('uuid/V4');
 
 AsyncHookStorage.enable();

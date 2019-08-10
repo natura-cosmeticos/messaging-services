@@ -1,4 +1,4 @@
-const AsyncHooksStorage = require('@naturacosmeticos/async-hook-storage');
+const AsyncHooksStorage = require('@naturacosmeticos/async-hooks-storage');
 
 class CorrelationEngine {
     static wrapMessage(unwrappedMessageJSON) {
