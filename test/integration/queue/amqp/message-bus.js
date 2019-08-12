@@ -2,6 +2,7 @@ const amqp = require('amqplib');
 const async = require('async');
 const faker = require('faker/locale/en');
 const { assert } = require('chai');
+const compressEngine = require('../../../../src/util/compress-engine');
 
 const { Queue: { Amqp: { MessageBus } } } = require('../../../../index');
 
@@ -26,11 +27,12 @@ describe('QueueAmqpMessageBus', () => {
     it('receives messages from a single queue', (done) => {
       (async () => {
         const bus = `${faker.company.bsBuzz()}-${faker.company.bsNoun()}`;
-        const message = faker.random.words();
+        const message = { message: faker.random.words() };
 
         await messageBus.receive({
           [bus]: async (receivedMessage) => { // eslint-disable-line require-await
-            assert.equal(receivedMessage, message);
+            const decompressedMessage = await compressEngine.decompressMessage(receivedMessage);
+            assert.deepEqual(decompressedMessage, message);
             done();
           },
         });
@@ -57,7 +59,7 @@ describe('QueueAmqpMessageBus', () => {
           [busList[1]]: callbacks[1],
         });
 
-        const buffer = Buffer.from(JSON.stringify(''));
+        const buffer = Buffer.from(JSON.stringify({ message: faker.random.words() }));
 
         await channel.publish(busList[0], '', buffer);
         await channel.publish(busList[1], '', buffer);

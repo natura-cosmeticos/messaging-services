@@ -4,6 +4,7 @@ const { assert } = require('chai');
 const SqsQueue = require('../../../helpers/sqs-queue');
 
 const { Queue: { Aws: { MessageBus } } } = require('../../../../index');
+const CompressEngine = require('../../../../src/util/compress-engine');
 
 describe('QueueAwsSqsMessageBus', () => {
   it('receives messages from a single queue', (done) => {
@@ -14,13 +15,14 @@ describe('QueueAwsSqsMessageBus', () => {
       try {
         sqsQueue = new SqsQueue(`${faker.company.bsNoun()}-${faker.random.number()}`);
         messageBus = new MessageBus({ [sqsQueue.name]: sqsQueue.queueUrl() });
-        const message = faker.random.words();
+        const message = { message: faker.random.words() };
 
         await sqsQueue.create();
 
         await messageBus.receive({
           [sqsQueue.name]: async (receivedMessage) => { // eslint-disable-line require-await
-            assert.equal(receivedMessage, message);
+            const decompressedMessage = await CompressEngine.decompressMessage(receivedMessage);
+            assert.deepEqual(decompressedMessage, message);
             done();
           },
         });
@@ -60,8 +62,8 @@ describe('QueueAwsSqsMessageBus', () => {
           [sqsQueues[0].name]: callbacks[0],
           [sqsQueues[1].name]: callbacks[1],
         });
-        await sqsQueues[0].send('');
-        await sqsQueues[1].send('');
+        await sqsQueues[0].send({ message: faker.random.words() });
+        await sqsQueues[1].send({ message: faker.random.words() });
       } finally {
         await messageBus.close();
         await Promise.all(sqsQueues.map(queue => queue.remove()));

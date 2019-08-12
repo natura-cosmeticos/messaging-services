@@ -47,14 +47,14 @@ describe('MessageBus', () => {
 
   it('sends a message to the given AWS SNS topic', (done) => {
     (async () => {
-      const message = `Message body  ${uuid()}`;
+      const message = { message: `Message body  ${uuid()}` };
 
       server = createServer(async (err, buffer) => {
         const receivedMessage = JSON.parse(buffer.toString()).Message;
         const decompressedMessage = await CompressEngine.decompressMessage(receivedMessage);
 
         assert.isNull(err);
-        assert.equal(message, decompressedMessage);
+        assert.deepEqual(message, decompressedMessage);
         done();
       });
       const listener = server.listen(0);
