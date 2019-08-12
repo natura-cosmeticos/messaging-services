@@ -32,7 +32,7 @@ class MessageBus {
     const logger = Logger.current().createChildLogger('message-bus:receive');
 
     /** @private */
-    this.consumers = Object.keys(queueHandlerMap).map(queueName => Consumer.create({
+    this.consumers = Object.keys(queueHandlerMap).map(queueName => Consumer.Consumer.create({
       handleMessage: this.handler(queueName, queueHandlerMap[queueName]),
       queueUrl: this.friendlyNamesToUrl[queueName],
       sqs: this.sqs,
@@ -74,7 +74,7 @@ class MessageBus {
       const logger = Logger.current().createChildLogger('message-bus:handler');
 
       try {
-        const wrappedCorrelationIdMessage = await CompressEngine.decompressMessage(message.body);
+        const wrappedCorrelationIdMessage = await CompressEngine.decompressMessage(message.Body);
         const { body, correlationId } = CorrelationEngine.unwrapMessage(wrappedCorrelationIdMessage);
 
         logger.log(`Receiving message from SQS\nUnwrapped message', ${{ body }},'\nWrapped message', ${wrappedCorrelationIdMessage}`);

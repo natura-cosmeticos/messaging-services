@@ -3,7 +3,7 @@ const CompressEngineFactory = require('./engines');
 
 async function extractInputMessage(inputMessage) {
   try {
-    const input = await CompressEngine.decompress(inputMessage['x-iris-data'],inputMessage['x-iris-engine']);
+    const input = await CompressEngine.decompress(inputMessage['x-iris-data'], inputMessage['x-iris-engine']);
     const resultData = JSON.parse(input);
     return resultData;
   } catch (err) {
@@ -42,12 +42,15 @@ class CompressEngine {
 
   static async decompressMessage(message) {
     let inputMessage = message;
+
     if (typeof inputMessage === 'string') {
       inputMessage = JSON.parse(inputMessage);
     }
+
     if (inputMessage['x-iris-engine'] && inputMessage['x-iris-data']) {
       inputMessage = await extractInputMessage(inputMessage);
     }
+
     return inputMessage;
   }
 }

@@ -1,3 +1,4 @@
+const ClientFactory = require('../../../common/aws/client-factory');
 const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 const LoggerContext = require('../../../common/logger/context');
 const CorrelationEngine = require('../../../util/correlation-engine');
@@ -18,6 +19,8 @@ class LambdaHandler {
 
   async handle({ Records: records }) { // eslint-disable-line require-await
     /** @private */
+    this.sqs = ClientFactory.create('sqs');
+
     return new Promise((resolve, reject) => {
       LoggerContext.run(() => {
         Promise.all(records.map((record) => {
@@ -41,6 +44,11 @@ class LambdaHandler {
 
       try {
         await this.handlers[queueInfo.friendlyName](body, correlationId);
+
+        await this.sqs.deleteMessage({
+          QueueUrl: queueInfo.url,
+          ReceiptHandle: receiptHandle,
+        }).promise();
       } catch (error) {
         logger.error(`MessageId ${messageId}: ${errorMessages.messageHandler.error} - ${error}`);
         throw new MessageBusError(`MessageId ${messageId}: ${errorMessages.messageHandler.error}: ${error}`);

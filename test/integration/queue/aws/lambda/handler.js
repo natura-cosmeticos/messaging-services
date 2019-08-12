@@ -7,12 +7,11 @@ const CompressEngine = require('../../../../../src/util/compress-engine');
 const { inputFromSqsResponse } = require('../../../../fixtures/aws-lambda');
 const { Queue: { Aws: { LambdaHandler } } } = require('../../../../../');
 
-async function handler(message) { // eslint-disable-line require-await
-  const { Message } = message;
-  const decompressedMessage = await CompressEngine.decompressMessage(Message);
+async function handler(incomingMessage) { // eslint-disable-line require-await
+  const decompressedMessage = await CompressEngine.decompressMessage(incomingMessage.Message);
 
   if (decompressedMessage.data !== 'success') {
-    throw new Error(`Message ${message} was not expected`);
+    throw new Error(`Message ${JSON.stringify(message)} was not expected`);
   }
 }
 
@@ -48,7 +47,7 @@ describe('LambdaHandler', () => {
         [queue.name]: handler,
       };
 
-        await new LambdaHandler(arnToQueueInfo, handlerFactories).handle(lambdaInput);
+      await new LambdaHandler(arnToQueueInfo, handlerFactories).handle(lambdaInput);
       assert.equal(await queue.length(), 0);
     });
   });

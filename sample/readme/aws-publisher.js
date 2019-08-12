@@ -19,9 +19,9 @@ const messageBus = Factory.create({
 messageBus.publish('checkout', { message: 'message without correlation-id' })
   .then((message) => {
     console.log('message sent:', message);
-});
-AsyncHookStorage.setEntry('correlation-id',uuidV4());
+  });
+AsyncHookStorage.setEntry('correlation-id', uuidV4());
 messageBus.publish('checkout', { message: 'message with correlation-id' })
   .then((message) => {
     console.log('message sent:', message);
-});
+  });
