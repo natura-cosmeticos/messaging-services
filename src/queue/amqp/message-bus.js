@@ -88,7 +88,7 @@ class AmqpMessageBus {
 
       try {
         const decompressedMessage = await CompressEngine.decompressMessage(compressedMessage);
-        const wrappedCorrelationIdMessage = JSON.parse(decompressedMessage.Body);
+        const wrappedCorrelationIdMessage = CorrelationEngine.wrapMessage(decompressedMessage);
         const { body, correlationId } = CorrelationEngine.unwrapMessage(wrappedCorrelationIdMessage);
 
         LoggerContext
