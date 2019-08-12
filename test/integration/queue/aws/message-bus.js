@@ -7,7 +7,7 @@ const { Queue: { Aws: { MessageBus } } } = require('../../../../index');
 const CompressEngine = require('../../../../src/util/compress-engine');
 
 describe('QueueAwsSqsMessageBus', () => {
-  it('receives messages from a single queue', (done) => {
+  it('receives messages from a single queue', async (done) => {
     (async () => {
       let sqsQueue;
       let messageBus;
@@ -34,7 +34,7 @@ describe('QueueAwsSqsMessageBus', () => {
     })();
   });
 
-  it('receives messages from multiple queues', (done) => {
+  it('receives messages from multiple queues', async (done) => {
     (async () => {
       let sqsQueues;
       let messageBus;
