@@ -70,7 +70,6 @@ class MessageBus {
   /** @private */
   handler(queueName, fn) {
     return (message, done) => LoggerContext.run(async () => {
-
       const logger = Logger.current().createChildLogger('message-bus:handler');
 
       try {
@@ -96,7 +95,7 @@ class MessageBus {
           .catch(done);
       } catch (error) {
         logger.error(`${errorMessages.messageBus.decompress} - ${error}`);
-        throw new MessageBusError(`${errorMessages.messageBus.decompress}: ${error}`)
+        throw new MessageBusError(`${errorMessages.messageBus.decompress}: ${error}`);
       }
     });
   }

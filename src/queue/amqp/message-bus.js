@@ -1,8 +1,8 @@
+const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 const AmqpConnection = require('../../common/amqp/connection');
 const LoggerContext = require('../../common/logger/context');
 const CorrelationEngine = require('../../util/correlation-engine');
 const CompressEngine = require('../../util/compress-engine');
-const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 const errorMessages = require('../../common/errors/messages');
 const MessageBusError = require('../../common/errors/message-bus-error');
 
@@ -80,16 +80,19 @@ class AmqpMessageBus {
   /**
   * @private
   */
+  // eslint-disable-next-line max-lines-per-function
   handler(queueName, channel, fn) {
     const logger = Logger.current().createChildLogger('message-bus:receive');
 
+    // eslint-disable-next-line max-lines-per-function
     return message => LoggerContext.run(() => new Promise(async (resolve) => {
       const compressedMessage = JSON.parse(message.content.toString('utf-8'));
 
       try {
         const decompressedMessage = await CompressEngine.decompressMessage(compressedMessage);
         const wrappedCorrelationIdMessage = CorrelationEngine.wrapMessage(decompressedMessage);
-        const { body, correlationId } = CorrelationEngine.unwrapMessage(wrappedCorrelationIdMessage);
+        const { body, correlationId } = CorrelationEngine
+          .unwrapMessage(wrappedCorrelationIdMessage);
 
         LoggerContext
           .logItemProcessing(() => fn(body, correlationId), queueName, body)

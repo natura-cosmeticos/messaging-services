@@ -25,6 +25,7 @@ class MessageBus {
    * @param {string} friendlyName - The topic friendly name
    * @param {string} message - The message you want to publish
    */
+  // eslint-disable-next-line max-lines-per-function, max-statements
   async publish(friendlyName, message) {
     const sns = ClientFactory.create('sns');
     const logger = Logger.current().createChildLogger('message-bus:send');
@@ -33,7 +34,8 @@ class MessageBus {
     let compressedMessage;
 
     try {
-      compressedMessage = await CompressEngine.compressMessage(wrappedCorrelationIdMessage, this.compressEngine);
+      compressedMessage = await CompressEngine
+        .compressMessage(wrappedCorrelationIdMessage, this.compressEngine);
     } catch (error) {
       logger.error(`${errorMessages.messageBus.compress}, ${error}`);
       compressedMessage = wrappedCorrelationIdMessage;

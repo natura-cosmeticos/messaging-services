@@ -1,5 +1,5 @@
-const ClientFactory = require('../../../common/aws/client-factory');
 const Logger = require('@naturacosmeticos/clio-nodejs-logger');
+const ClientFactory = require('../../../common/aws/client-factory');
 const LoggerContext = require('../../../common/logger/context');
 const CorrelationEngine = require('../../../util/correlation-engine');
 const CompressEngine = require('../../../util/compress-engine');
@@ -33,7 +33,9 @@ class LambdaHandler {
     });
   }
 
-  async handleRecord({ body, eventSourceARN: arn, receiptHandle, messageId }) {
+  async handleRecord({
+    body, eventSourceARN: arn, receiptHandle, messageId,
+  }) {
     const logger = Logger.current().createChildLogger('lambdaHandler:handleRecord');
     const queueInfo = this.arnToQueueInfo[arn];
     const awsMessage = JSON.parse(body);

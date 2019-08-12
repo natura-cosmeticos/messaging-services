@@ -32,6 +32,7 @@ describe('QueueAmqpMessageBus', () => {
         await messageBus.receive({
           [bus]: async (receivedMessage) => { // eslint-disable-line require-await
             const decompressedMessage = await compressEngine.decompressMessage(receivedMessage);
+
             assert.deepEqual(decompressedMessage, message);
             done();
           },

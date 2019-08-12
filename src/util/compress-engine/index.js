@@ -5,6 +5,7 @@ async function extractInputMessage(inputMessage) {
   try {
     const input = await CompressEngine.decompress(inputMessage['x-iris-data'], inputMessage['x-iris-engine']);
     const resultData = JSON.parse(input);
+
     return resultData;
   } catch (err) {
     throw err;

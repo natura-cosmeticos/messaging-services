@@ -26,6 +26,7 @@ class MessageBus {
    * @param {Object} message - The raw message content
    * @returns {Promise<void>}
    */
+  // eslint-disable-next-line max-lines-per-function, max-statements
   async publish(bus, message) {
     const connection = new AmqpConnection(this.serverUrl);
     const logger = Logger.current().createChildLogger('message-bus:send');

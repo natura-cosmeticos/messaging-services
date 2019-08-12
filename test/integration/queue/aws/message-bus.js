@@ -22,6 +22,7 @@ describe('QueueAwsSqsMessageBus', () => {
         await messageBus.receive({
           [sqsQueue.name]: async (receivedMessage) => { // eslint-disable-line require-await
             const decompressedMessage = await CompressEngine.decompressMessage(receivedMessage);
+
             assert.deepEqual(decompressedMessage, message);
           },
         });
