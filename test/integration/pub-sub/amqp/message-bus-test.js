@@ -1,6 +1,8 @@
 const amqp = require('amqplib');
 const uuid = require('uuid/v4');
 const { assert } = require('chai');
+const compressEngineEnum = require('../../../../src/util/compress-engine/compress-engine-enum');
+const compressEngine = require('../../../../src/util/compress-engine');
 
 const { PubSub: { Amqp: { MessageBus } } } = require('../../../../index');
 
@@ -42,7 +44,11 @@ describe('PubSubAmqpMessageBus', () => {
       const receivedMessage = await channel.get(tempQueue);
 
       assert.isObject(receivedMessage);
-      assert.equal(JSON.parse(receivedMessage.content.toString('utf-8')), message);
+      console.log("\n\n\nreceivedMessage.content.toString('utf-8')", receivedMessage.content.toString('utf-8'));
+      assert.equal(JSON.parse(receivedMessage.content.toString('utf-8')), {
+        'x-data-iris': CompressEngine.compressMessage(message, compressEngineEnum.GZIP),
+        'x-iris-engine': compressEngineEnum.GZIP,
+      });
     });
 
     it('creates the target AMQP exchange', async () => {
