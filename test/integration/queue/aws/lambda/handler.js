@@ -1,9 +1,9 @@
 const faker = require('faker/locale/en');
 const { assert } = require('chai');
 
-const SqsQueue = require('helpers/sqs-queue.js');
+const SqsQueue = require('../../../../helpers/sqs-queue');
 
-const { inputFromSqsResponse } = require('fixtures/aws-lambda');
+const { inputFromSqsResponse } = require('../../../../fixtures/aws-lambda');
 const { Queue: { Aws: { LambdaHandler } } } = require('../../../../../');
 
 async function handler(message) { // eslint-disable-line require-await

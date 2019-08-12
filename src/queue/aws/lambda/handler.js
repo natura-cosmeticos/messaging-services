@@ -1,3 +1,4 @@
+const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 const LoggerContext = require('../../../common/logger/context');
 const CorrelationEngine = require('../../../util/correlation-engine');
 const CompressEngine = require('../../../util/compress-engine');

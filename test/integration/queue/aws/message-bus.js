@@ -1,7 +1,7 @@
 const async = require('async');
 const faker = require('faker/locale/en');
 const { assert } = require('chai');
-const SqsQueue = require('helpers/sqs-queue');
+const SqsQueue = require('../../../helpers/sqs-queue');
 
 const { Queue: { Aws: { MessageBus } } } = require('../../../../index');
 
