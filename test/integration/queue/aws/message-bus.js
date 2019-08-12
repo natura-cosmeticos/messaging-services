@@ -7,7 +7,7 @@ const { Queue: { Aws: { MessageBus } } } = require('../../../../index');
 const CompressEngine = require('../../../../src/util/compress-engine');
 
 describe('QueueAwsSqsMessageBus', () => {
-  it('receives messages from a single queue', async (done) => {
+  it('receives messages from a single queue', () => {
     (async () => {
       let sqsQueue;
       let messageBus;
@@ -23,7 +23,6 @@ describe('QueueAwsSqsMessageBus', () => {
           [sqsQueue.name]: async (receivedMessage) => { // eslint-disable-line require-await
             const decompressedMessage = await CompressEngine.decompressMessage(receivedMessage);
             assert.deepEqual(decompressedMessage, message);
-            done();
           },
         });
         await sqsQueue.send(message);
@@ -34,7 +33,7 @@ describe('QueueAwsSqsMessageBus', () => {
     })();
   });
 
-  it('receives messages from multiple queues', async (done) => {
+  it('receives messages from multiple queues', () => {
     (async () => {
       let sqsQueues;
       let messageBus;
@@ -55,7 +54,6 @@ describe('QueueAwsSqsMessageBus', () => {
         async.each(
           sqsQueues,
           (queue, cb) => callbacks.push(async () => cb()), // eslint-disable-line require-await
-          done,
         );
 
         await messageBus.receive({
