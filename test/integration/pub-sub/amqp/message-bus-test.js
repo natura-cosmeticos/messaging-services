@@ -46,7 +46,7 @@ describe('PubSubAmqpMessageBus', () => {
       assert.isObject(receivedMessage);
       console.log("\n\n\nreceivedMessage.content.toString('utf-8')", receivedMessage.content.toString('utf-8'));
       assert.equal(JSON.parse(receivedMessage.content.toString('utf-8')), {
-        'x-data-iris': CompressEngine.compressMessage(message, compressEngineEnum.GZIP),
+        'x-data-iris': compressEngine.compressMessage(message, compressEngineEnum.GZIP),
         'x-iris-engine': compressEngineEnum.GZIP,
       });
     });
