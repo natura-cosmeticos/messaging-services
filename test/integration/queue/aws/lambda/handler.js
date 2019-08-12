@@ -11,7 +11,7 @@ async function handler(incomingMessage) { // eslint-disable-line require-await
   const decompressedMessage = await CompressEngine.decompressMessage(incomingMessage.Message);
 
   if (decompressedMessage.data !== 'success') {
-    throw new Error(`Message ${JSON.stringify(message)} was not expected`);
+    throw new Error(`Message ${JSON.stringify(incomingMessage)} was not expected`);
   }
 }
 

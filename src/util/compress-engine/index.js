@@ -3,6 +3,7 @@ const CompressEngineFactory = require('./engines');
 
 async function extractInputMessage(inputMessage) {
   try {
+    // eslint-disable-next-line no-use-before-define
     const input = await CompressEngine.decompress(inputMessage['x-iris-data'], inputMessage['x-iris-engine']);
     const resultData = JSON.parse(input);
 
@@ -38,6 +39,7 @@ class CompressEngine {
 
     if (!compressEngine) return input;
 
+    // eslint-disable-next-line no-return-await
     return await compressEngine.decompress(input);
   }
 

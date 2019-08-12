@@ -33,6 +33,7 @@ class LambdaHandler {
     });
   }
 
+  // eslint-disable-next-line max-lines-per-function, max-statements
   async handleRecord({
     body, eventSourceARN: arn, receiptHandle, messageId,
   }) {
@@ -42,10 +43,11 @@ class LambdaHandler {
 
     try {
       const wrappedCorrelationIdMessage = await CompressEngine.decompressMessage(awsMessage);
-      const { body, correlationId } = CorrelationEngine.unwrapMessage(wrappedCorrelationIdMessage);
+      const { body: messageBody, correlationId } = CorrelationEngine
+        .unwrapMessage(wrappedCorrelationIdMessage);
 
       try {
-        await this.handlers[queueInfo.friendlyName](body, correlationId);
+        await this.handlers[queueInfo.friendlyName](messageBody, correlationId);
 
         await this.sqs.deleteMessage({
           QueueUrl: queueInfo.url,

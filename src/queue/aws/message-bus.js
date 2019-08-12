@@ -27,13 +27,16 @@ class MessageBus {
   * @param {Object} queueHandlerMap - A map of queue names to MessageHandler
   * @returns {Promise<void>}
   */
+  // eslint-disable-next-line max-lines-per-function
   async receive(queueHandlerMap) {
     this.sqs = ClientFactory.create('sqs');
     const logger = Logger.current().createChildLogger('message-bus:receive');
 
     /** @private */
     this.consumers = Object.keys(queueHandlerMap).map(queueName => Consumer.Consumer.create({
-      handleMessage: this.handler(queueName, queueHandlerMap[queueName]),
+      handleMessage: this.handler(
+        queueName, queueHandlerMap[queueName], this.friendlyNamesToUrl[queueName],
+      ),
       queueUrl: this.friendlyNamesToUrl[queueName],
       sqs: this.sqs,
     }));
@@ -68,13 +71,16 @@ class MessageBus {
   }
 
   /** @private */
-  handler(queueName, fn) {
+  // eslint-disable-next-line max-lines-per-function, max-statements
+  handler(queueName, fn, queueUrl) {
+    // eslint-disable-next-line max-lines-per-function, max-statements
     return (message, done) => LoggerContext.run(async () => {
       const logger = Logger.current().createChildLogger('message-bus:handler');
 
       try {
         const wrappedCorrelationIdMessage = await CompressEngine.decompressMessage(message.Body);
-        const { body, correlationId } = CorrelationEngine.unwrapMessage(wrappedCorrelationIdMessage);
+        const { body, correlationId } = CorrelationEngine
+          .unwrapMessage(wrappedCorrelationIdMessage);
 
         logger.log(`Receiving message from SQS\nUnwrapped message', ${{ body }},'\nWrapped message', ${wrappedCorrelationIdMessage}`);
 
@@ -83,8 +89,8 @@ class MessageBus {
           .then(async () => {
             try {
               await this.sqs.deleteMessage({
-                QueueUrl: queueInfo.url,
-                ReceiptHandle: receiptHandle,
+                QueueUrl: queueUrl,
+                ReceiptHandle: message.ReceiptHandle,
               }).promise();
             } catch (error) {
               logger.error(`MessageId ${message.messageId}: ${errorMessages.messageBus.delete} - ${error}`);
