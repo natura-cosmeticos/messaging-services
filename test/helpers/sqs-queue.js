@@ -1,5 +1,6 @@
 const { Endpoint, SQS } = require('aws-sdk');
 const { camelizeKeys } = require('humps');
+const CompressEngine = require('../../src/util/compress-engine');
 
 class SqsQueue {
   constructor(name) {
@@ -51,8 +52,10 @@ class SqsQueue {
     }).promise();
   }
 
-  sendManyRepeatedly(count, message) {
-    return Promise.all(new Array(count).fill(0).map(() => this.send(message)));
+  async sendManyRepeatedly(count, message) {
+    const compressedMessage = await CompressEngine.compressMessage(message);
+
+    return Promise.all(new Array(count).fill(0).map(() => this.send(compressedMessage)));
   }
 }
 

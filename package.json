@@ -2,15 +2,15 @@
   "main": "index.js",
   "name": "@naturacosmeticos/iris-nodejs-messenger",
   "author": "Natura Cosméticos <TDDAArquitetura@natura.net>",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "dependencies": {
-    "@naturacosmeticos/clio-nodejs-logger": "^1.0.0",
+    "@naturacosmeticos/async-hooks-storage": "^1.0.0",
+    "@naturacosmeticos/clio-nodejs-logger": "^2.0.0",
     "amqplib": "^0.5.2",
     "async": "^2.6.1",
-    "aws-sdk": "^2.271.1",
+    "aws-sdk": "^2.505.0",
     "lodash": "^4.17.10",
-    "node-gzip": "^1.1.2",
-    "sqs-consumer": "^3.8.0",
+    "sqs-consumer": "^5.3.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
@@ -62,7 +62,9 @@
     "Daniel Arthaud <daniel@vizir.com.br>",
     "Fabrício Campos <fabricio@vizir.com.br>",
     "Handrus Nogueira <handrus@gmail.com>",
-    "Danilo Ribeiro <danilo@ventrue.com.br>"
+    "Danilo Ribeiro <danilo@ventrue.com.br>",
+    "Murilo Portescheller <murilo.portescheller@avanade.com>",
+    "Giancarlo Bonansea <giancarlo.bonansea@accenture.com>"
   ],
   "homepage": "https://github.com/natura-cosmeticos/iris-nodejs-messenger#readme",
   "bugs": "https://github.com/natura-cosmeticos/iris-nodejs-messenger/issues",

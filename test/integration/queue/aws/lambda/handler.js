@@ -1,14 +1,17 @@
 const faker = require('faker/locale/en');
 const { assert } = require('chai');
 
-const SqsQueue = require('helpers/sqs-queue.js');
+const SqsQueue = require('../../../../helpers/sqs-queue');
+const CompressEngine = require('../../../../../src/util/compress-engine');
 
-const { inputFromSqsResponse } = require('fixtures/aws-lambda');
+const { inputFromSqsResponse } = require('../../../../fixtures/aws-lambda');
 const { Queue: { Aws: { LambdaHandler } } } = require('../../../../../');
 
-async function handler(message) { // eslint-disable-line require-await
-  if (message !== 'success') {
-    throw new Error(`Message ${message} was not expected`);
+async function handler(incomingMessage) { // eslint-disable-line require-await
+  const decompressedMessage = await CompressEngine.decompressMessage(incomingMessage.Message);
+
+  if (decompressedMessage.data !== 'success') {
+    throw new Error(`Message ${JSON.stringify(incomingMessage)} was not expected`);
   }
 }
 
@@ -26,7 +29,7 @@ describe('LambdaHandler', () => {
     it('removes all messages from the queues', async () => {
       const messageCount = faker.random.number({ max: 6, min: 3 });
 
-      await queue.sendManyRepeatedly(messageCount, 'success');
+      await queue.sendManyRepeatedly(messageCount, { data: 'success' });
       assert.equal(await queue.length(), messageCount);
 
       const lambdaInput = inputFromSqsResponse(
@@ -56,8 +59,8 @@ describe('LambdaHandler', () => {
       const successMessages = messageCount - failedMessages;
 
       assert.equal(await queue.length(), 0);
-      await queue.sendManyRepeatedly(failedMessages, 'fail');
-      await queue.sendManyRepeatedly(successMessages, 'success');
+      await queue.sendManyRepeatedly(failedMessages, { data: 'fail' });
+      await queue.sendManyRepeatedly(successMessages, { data: 'success' });
       assert.equal(await queue.length(), messageCount);
       const lambdaInput = inputFromSqsResponse(
         await queue.arn(),
