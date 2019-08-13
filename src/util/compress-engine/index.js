@@ -1,19 +1,18 @@
 const CompressEngineEnum = require('./compress-engine-enum');
 const CompressEngineFactory = require('./engines');
 
-async function extractInputMessage(inputMessage) {
-  try {
-    // eslint-disable-next-line no-use-before-define
-    const input = await CompressEngine.decompress(inputMessage['x-iris-data'], inputMessage['x-iris-engine']);
-    const resultData = JSON.parse(input);
-
-    return resultData;
-  } catch (err) {
-    throw err;
-  }
-}
-
 class CompressEngine {
+  static async extractInputMessage(inputMessage) {
+    try {
+      const input = await this.decompress(inputMessage['x-iris-data'], inputMessage['x-iris-engine']);
+      const resultData = JSON.parse(input);
+
+      return resultData;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   static compress(input, engine = CompressEngineEnum.GZIP) {
     const compressEngine = CompressEngineFactory.create(engine);
 
@@ -39,8 +38,9 @@ class CompressEngine {
 
     if (!compressEngine) return input;
 
-    // eslint-disable-next-line no-return-await
-    return await compressEngine.decompress(input);
+    const decompressedMessage = await compressEngine.decompress(input);
+
+    return decompressedMessage;
   }
 
   static async decompressMessage(message) {
@@ -51,7 +51,7 @@ class CompressEngine {
     }
 
     if (inputMessage['x-iris-engine'] && inputMessage['x-iris-data']) {
-      inputMessage = await extractInputMessage(inputMessage);
+      inputMessage = await this.extractInputMessage(inputMessage);
     }
 
     return inputMessage;
