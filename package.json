@@ -10,8 +10,9 @@
     "async": "^2.6.1",
     "aws-sdk": "^2.505.0",
     "lodash": "^4.17.10",
-    "sqs-consumer": "^5.3.0",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "snyk": "^1.189.0"
+    "sqs-consumer": "^5.3.0"
   },
   "devDependencies": {
     "chai": "^4.1.2",
@@ -39,7 +40,9 @@
     "test:coverage": "nyc mocha --recursive --exit",
     "test:debug": "mocha --recursive --exit --no-timeouts --require architecture-node-base/test-debug",
     "test:unit": "NODE_PATH=src:test mocha test/unit/ --recursive --exit",
-    "test:watch": "mocha --recursive -w --exit"
+    "test:watch": "mocha --recursive -w --exit",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "nyc": {
     "all": true,
@@ -77,5 +80,6 @@
     "sqs",
     "rabbitmq"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "snyk": true
 }
