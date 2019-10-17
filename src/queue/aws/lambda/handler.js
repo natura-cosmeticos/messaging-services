@@ -1,5 +1,10 @@
+const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 const ClientFactory = require('../../../common/aws/client-factory');
 const LoggerContext = require('../../../common/logger/context');
+const CorrelationEngine = require('../../../util/correlation-engine');
+const CompressEngine = require('../../../util/compress-engine');
+const errorMessages = require('../../../common/errors/messages');
+const MessageBusError = require('../../../common/errors/message-bus-error');
 
 class LambdaHandler {
   /**
@@ -28,15 +33,34 @@ class LambdaHandler {
     });
   }
 
-  async handleRecord({ body, eventSourceARN: arn, receiptHandle }) {
+  // eslint-disable-next-line max-lines-per-function, max-statements
+  async handleRecord({
+    body, eventSourceARN: arn, receiptHandle, messageId,
+  }) {
+    const logger = Logger.current().createChildLogger('lambdaHandler:handleRecord');
     const queueInfo = this.arnToQueueInfo[arn];
+    const awsMessage = JSON.parse(body);
 
-    await this.handlers[queueInfo.friendlyName](JSON.parse(JSON.parse(body).Message));
+    try {
+      const wrappedCorrelationIdMessage = await CompressEngine.decompressMessage(awsMessage);
+      const { body: messageBody, correlationId } = CorrelationEngine
+        .unwrapMessage(wrappedCorrelationIdMessage);
 
-    await this.sqs.deleteMessage({
-      QueueUrl: queueInfo.url,
-      ReceiptHandle: receiptHandle,
-    }).promise();
+      try {
+        await this.handlers[queueInfo.friendlyName](messageBody, correlationId);
+
+        await this.sqs.deleteMessage({
+          QueueUrl: queueInfo.url,
+          ReceiptHandle: receiptHandle,
+        }).promise();
+      } catch (error) {
+        logger.error(`MessageId ${messageId}: ${errorMessages.messageHandler.error} - ${error}`);
+        throw new MessageBusError(`MessageId ${messageId}: ${errorMessages.messageHandler.error}: ${error}`);
+      }
+    } catch (error) {
+      logger.error(`MessageId ${messageId}: ${errorMessages.messageBus.decompress} - ${error}`);
+      throw new MessageBusError(`MessageId ${messageId}: ${errorMessages.messageBus.decompress}: ${error}`);
+    }
   }
 }
 

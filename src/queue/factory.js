@@ -15,7 +15,7 @@ class MessageBusFactory {
       return MessageBusFactory.createAmqpBus(options.amqpOptions || {});
     }
 
-    return MessageBusFactory.createAwsSnsBus(options.awsSqsOptions || {});
+    return MessageBusFactory.createAwsSqsBus(options.awsSqsOptions || {});
   }
 
   /** @private */
@@ -24,7 +24,7 @@ class MessageBusFactory {
   }
 
   /** @private */
-  static createAwsSnsBus({ friendlyNamesToUrl }) {
+  static createAwsSqsBus({ friendlyNamesToUrl }) {
     return new QueueAwsSqsMessageBus(friendlyNamesToUrl);
   }
 }

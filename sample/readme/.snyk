@@ -1,0 +1,14 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.13.5
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-450202:
+    - '@naturacosmeticos/iris-nodejs-messenger > lodash':
+        patched: '2019-07-03T21:14:26.191Z'
+    - '@naturacosmeticos/iris-nodejs-messenger > @naturacosmeticos/clio-nodejs-logger > lodash':
+        patched: '2019-07-03T21:14:26.191Z'
+    - '@naturacosmeticos/iris-nodejs-messenger > async > lodash':
+        patched: '2019-07-03T21:14:26.191Z'
+    - '@naturacosmeticos/iris-nodejs-messenger > sqs-consumer > async > lodash':
+        patched: '2019-07-03T21:14:26.191Z'
