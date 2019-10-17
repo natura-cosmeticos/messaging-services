@@ -3,6 +3,8 @@ const Logger = require('@naturacosmeticos/clio-nodejs-logger');
 const AmqpConnection = require('../../common/amqp/connection');
 const MessageBusError = require('../../common/errors/message-bus-error');
 const errorMessages = require('../../common/errors/messages');
+const CorrelationEngine = require('../../util/correlation-engine');
+const CompressEngine = require('../../util/compress-engine');
 
 /**
  * RabbitMQ message bus implementation
@@ -10,10 +12,12 @@ const errorMessages = require('../../common/errors/messages');
 class MessageBus {
   /**
    * @param {string} serverUrl - URL of the target RabbitMQ server
+   * @param {String} compressEngine - String defining the compress engine
    */
-  constructor(serverUrl) {
+  constructor(serverUrl, compressEngine) {
     /** @private */
     this.serverUrl = serverUrl;
+    this.compressEngine = compressEngine || process.env.IRIS_COMPRESS_ENGINE;
   }
 
   /**
@@ -22,17 +26,29 @@ class MessageBus {
    * @param {Object} message - The raw message content
    * @returns {Promise<void>}
    */
+  // eslint-disable-next-line max-lines-per-function, max-statements
   async publish(bus, message) {
     const connection = new AmqpConnection(this.serverUrl);
     const logger = Logger.current().createChildLogger('message-bus:send');
 
-    logger.log('Sending message to AMQP bus', { message });
+    const wrappedMessage = CorrelationEngine.wrapMessage(message);
+    let compressedMessage;
+
+    try {
+      compressedMessage = await CompressEngine.compressMessage(wrappedMessage, this.compressEngine);
+    } catch (error) {
+      logger.error(`${errorMessages.messageBus.compress}, ${error}`);
+      compressedMessage = wrappedMessage;
+    }
 
     try {
       await connection.open();
 
       await connection.channel.assertExchange(bus, 'fanout', { durable: true });
-      await connection.channel.publish(bus, '', Buffer.from(JSON.stringify(message)), { persistent: true });
+
+      logger.log(`Sending message to AMQP bus\nUnwrapped message ${JSON.stringify({ message })}\nWrapped message ${compressedMessage}`);
+
+      await connection.channel.publish(bus, '', Buffer.from(JSON.stringify(compressedMessage)), { persistent: true });
     } catch (error) {
       logger.error(error);
       throw new MessageBusError(`${errorMessages.messageBus.unavailable}: ${error}`);

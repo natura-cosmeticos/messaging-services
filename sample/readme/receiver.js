@@ -10,10 +10,11 @@ const messageBus = Factory.create({
 });
 
 messageBus.receive({
-  checkout: (message) => { // eslint-disable-line arrow-body-style
+  checkout: (message, correlationId) => { // eslint-disable-line arrow-body-style
     return new Promise((resolve) => {
-      console.log(message); // eslint-disable-line no-console
-      resolve(message);
+      console.log('correlationId:',correlationId); // eslint-disable-line no-console
+      console.log('message:',message); // eslint-disable-line no-console
+      resolve({message,correlationId});
     });
   },
 });
