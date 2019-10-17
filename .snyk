@@ -12,3 +12,8 @@ patch:
         patched: '2019-07-04T05:09:51.718Z'
     - sqs-consumer > async > lodash:
         patched: '2019-07-04T05:09:51.718Z'
+  SNYK-JS-HTTPSPROXYAGENT-469131:
+    - snyk > proxy-agent > https-proxy-agent:
+        patched: '2019-10-17T13:15:32.399Z'
+    - snyk > proxy-agent > pac-proxy-agent > https-proxy-agent:
+        patched: '2019-10-17T13:15:32.399Z'
