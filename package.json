@@ -11,7 +11,7 @@
     "aws-sdk": "^2.505.0",
     "lodash": "^4.17.10",
     "uuid": "^3.3.2",
-    "snyk": "^1.189.0",
+    "snyk": "^1.235.1",
     "sqs-consumer": "^5.3.0"
   },
   "devDependencies": {
