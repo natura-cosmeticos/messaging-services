@@ -1,4 +1,4 @@
-FROM node:8.10-alpine
+FROM node:8.17-alpine
 
 RUN apk add -U \
   bash \
